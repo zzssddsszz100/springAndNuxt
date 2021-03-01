@@ -4,9 +4,7 @@ import com.modoodesigner.domain.application.commands.ChainRegisterCommand;
 import com.modoodesigner.domain.common.model.BaseEntity;
 import com.modoodesigner.domain.model.part.common.Material;
 import com.modoodesigner.domain.model.part.common.PlatingColor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -14,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Chain extends BaseEntity {
     @Id
@@ -47,7 +44,4 @@ public class Chain extends BaseEntity {
     public Chain(ChainRegisterCommand command) {
     }
 
-//    private void setAutoCode(BasePart basePart){
-//        PartCodeUtil.generate(basePart);
-//    }
 }
