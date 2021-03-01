@@ -1,0 +1,101 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id "com.github.node-gradle.node" version "3.0.1"
+    id 'java'
+}
+
+group = 'com.modoodesigner'
+version = '0.0.2-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+node {
+    download = true
+
+    version = "12.16.1"
+
+    npmVersion = "6.13.4"
+
+    distBaseUrl = "https://nodejs.org/dist"
+
+    npmInstallCommand = "install"
+
+    workDir = file("${project.projectDir}/.gradle/nodejs")
+
+    npmWorkDir = file("${project.projectDir}/.gradle/npm")
+
+    nodeProjectDir = file("${project.projectDir}/admin/piaf-vue-start")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'com.h2database:h2'
+
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.hibernate.validator:hibernate-validator:6.1.7.Final'
+
+
+
+    compile("com.querydsl:querydsl-core")
+    compile("com.querydsl:querydsl-jpa")
+    annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api") // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api") // java.lang.NoClassDefFoundError (javax.annotation.Generated) 발생 대응
+
+    compileOnly 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+//    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+
+    compile group: 'com.github.gavlyukovskiy', name: 'p6spy-spring-boot-starter', version: '1.6.2'
+
+    testImplementation 'javax.validation:validation-api:2.0.1.Final'
+    testImplementation 'org.hibernate.validator:hibernate-validator:6.1.7.Final'
+
+}
+clean {
+    delete file('src/main/generated') // 인텔리제이 Annotation processor 생성물 생성위치
+}
+//task cleanGeneatedDir(type: Delete) { // 인텔리제이 annotation processor 가 생성한 Q클래스가 clean 태스크로 삭제되는 게 불편하다면 둘 중에 하나를 선택
+//    delete file('src/main/generated')
+//}
+
+task deleteVueArtifact(type:Delete){
+    delete "src/main/webapp/static","src/main/webapp/index.html"
+}
+
+task npmBuild(type:NpmTask, dependsOn:['deleteVueArtifact','npmInstall']){
+    args=["run","build"]
+}
+
+processResources.dependsOn 'npmBuild'
+
+test {
+    useJUnitPlatform()
+}

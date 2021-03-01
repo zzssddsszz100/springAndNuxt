@@ -1,0 +1,27 @@
+{
+  "data": {
+    "product": {
+      "chainList": [
+        {
+          "chainId": 1,
+          "length": 50
+        },
+        {
+          "chainId": 2,
+          "length": 40
+        }
+      ],
+      "pendantList": [
+        {
+          "pendantId": 1,
+          "position": {
+            "target": 1,
+            "x": 0,
+            "y": 0,
+            "index": 0
+          }
+        }
+      ]
+    }
+  }
+}
